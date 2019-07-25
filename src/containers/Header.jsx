@@ -6,7 +6,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+// import Icon from '@material-ui/core/Icon';
 
 class Header extends React.Component {
 
@@ -21,9 +21,9 @@ class Header extends React.Component {
           <Button
             onClick={this.props.modalStatusChange}
             color='second'>
-            <Icon color='action'>
+            {/* <Icon color='action'>
               add_circle
-            </Icon>
+            </Icon> */}
             Добавить рейс
           </Button>
         </Toolbar>
