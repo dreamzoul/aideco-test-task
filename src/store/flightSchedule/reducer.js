@@ -12,30 +12,29 @@ const initialState = {
 
 export default function reduce(state = initialState, action = { type: '' }) {
   switch (action.type) {
-    case types.FLIGHT_LIST_CHANGE:
-      let newFlightList = [...[], ...state.flightList];
-      const indexOfFlight = state.flightList.findIndex(el => el.id === action.flight.id);
-      if (indexOfFlight === -1) {
-        newFlightList.push(action.flight);
-      } else {
-        newFlightList[indexOfFlight] = action.flight;
-      }
-      return { ...state, flightList: newFlightList, selectedFlight: null, modalStatus: false };
 
-    case types.MODAL_STATUS_CHANGE:
-      if (state.modalStatus) {
-        return { ...state, modalStatus: !state.modalStatus, selectedFlight: null };
-      } else {
-        return { ...state, modalStatus: !state.modalStatus };
-      }
+    case types.MODAL_WINDOW_OPEN:
+      return { ...state, modalStatus: true };
+
+    case types.MODAL_WINDOW_CLOSE:
+      return { ...state, modalStatus: false, selectedFlight: null };
 
     case types.FLIGHT_SELECTED:
-      return { ...state, selectedFlight: action.flight, modalStatus: true };
+      return { ...state, modalStatus: true, selectedFlight: action.id };
+
+    case types.FLIGHT_ADDED:
+    case types.FLIGHT_CHANGED:
+    // case types.FLIGHT_DELETED:
+      return { ...state, modalStatus: false, selectedFlight: null, flightList: action.flightList };
 
     case types.SET_FILTER:
-      return { ...{}, ...state, currentFilter: action.filter };
+      return { ...state, currentFilter: action.filter };
 
     default:
       return state;
   };
+};
+
+export function getState() {
+  return initialState;
 };
