@@ -38,6 +38,10 @@ export default () => {
       type: 'select',
       options: ['не указано', 'вылетел', 'приземлился', 'идет посадка', 'задержан'],
       isFilter: true
+    },
+    {
+      title: 'Управление',
+      type: 'control-buttons'
     }
   ];
 };
