@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { modalStatusChange } from '../store/flightSchedule/actions';
+import { modalWindowOpen } from '../store/flightSchedule/actions';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
-// import Icon from '@material-ui/core/Icon';
+import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 
 class Header extends React.Component {
 
@@ -19,11 +19,10 @@ class Header extends React.Component {
             Таблица рейсов самолетов
           </Typography>
           <Button
-            onClick={this.props.modalStatusChange}
+            onClick={this.props.modalWindowOpen}
             color='second'>
-            {/* <Icon color='action'>
-              add_circle
-            </Icon> */}
+            <AddCircleOutline
+              color='second' />
             Добавить рейс
           </Button>
         </Toolbar>
@@ -34,7 +33,7 @@ class Header extends React.Component {
 
 function matchDispatchToProps(dispatch) {
   return bindActionCreators({
-    modalStatusChange: modalStatusChange,
+    modalWindowOpen: modalWindowOpen,
   }, dispatch)
 };
 

@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Header, FlightTable, AddChangeFlightWindow } from '.';
-import { bindActionCreators } from 'redux';
-import { modalStatusChange } from '../store/flightSchedule/actions';
 import './MainWindow.css';
 
 class MainWindow extends React.Component {
@@ -25,11 +23,4 @@ function mapStateToProps(state) {
   };
 };
 
-function matchDispatchToProps(dispatch) {
-  return bindActionCreators({
-    modalStatusChange: modalStatusChange,
-  }, dispatch)
-};
-
-export default connect(mapStateToProps, matchDispatchToProps)(MainWindow);
-
+export default connect(mapStateToProps)(MainWindow);

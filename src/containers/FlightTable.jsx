@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { flightSelected } from '../store/flightSchedule/actions';
+import { flightSelected, flightDeleted } from '../store/flightSchedule/actions';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,12 +9,14 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
+// import DeleteRounded from '@material-ui/icons/DeleteRounded';
+import CreateRounded from '@material-ui/icons/CreateRounded';
 import { FiltersRow } from '.';
 
 class FlightTable extends React.Component {
 
   render() {
-    const { list, model } = this.props;
+    const { list, model, flightSelected, /* flightDeleted */ } = this.props;
 
     return (
       <Paper>
@@ -32,26 +34,41 @@ class FlightTable extends React.Component {
                 return <TableCell key={index} align='center'>{el.title}</TableCell>
               })}
             </TableRow>
+
           </TableHead>
           <TableBody>
+
             {list.map(row => (
               <TableRow
                 key={row.id}
-                onClick={() => { this.props.flightSelected(row.id) }}
               >
                 {model.map(el => {
-                  if (el.type === 'select') {
 
-                    return <TableCell align='center'>
-                      {el.options[row[el.keyName]]}
-                    </TableCell>;
-                  } else {
+                  switch (el.type) {
+                    case 'select':
+                      return <TableCell align='center' >
+                        {el.options[row[el.keyName]]}
+                      </TableCell>
 
-                    return <TableCell align='center'>
-                      {row[el.keyName]}
-                    </TableCell>
-                  }
+                    case 'control-buttons':
+                      return <TableCell align='center'>
+                        <CreateRounded
+                          color='primary'
+                          onClick={() => { flightSelected(row.id) }}
+                        />
+                        {/* <DeleteRounded
+                          color='error'
+                          onClick={() => { flightDeleted(list, row.id) }}
+                        /> */}
+                      </TableCell>
+
+                    default:
+                      return <TableCell align='center'>
+                        {row[el.keyName]}
+                      </TableCell>
+                  };
                 })}
+
               </TableRow>
             ))}
           </TableBody>
@@ -100,6 +117,7 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch) {
   return bindActionCreators({
     flightSelected: flightSelected,
+    flightDeleted: flightDeleted
   }, dispatch);
 };
 

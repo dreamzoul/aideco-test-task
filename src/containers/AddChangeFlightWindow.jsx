@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { modalStatusChange, flightListChange } from '../store/flightSchedule/actions';
+import { modalWindowClose, flightAdded, flightChanged } from '../store/flightSchedule/actions';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import List from '@material-ui/core/List';
@@ -40,27 +40,34 @@ class AddChangeFlightWindow extends React.Component {
 
   //сохранение изменений из формы
   formSubmit = () => {
+    const { flight, newID, flightAdded, flightChanged } = this.props;
     let newFlight = {};
-    if (this.props.flight) {
+
+    if (flight) {
+      //Изменение существующего
       newFlight = {
         ...this.props.flight,
         ...this.state
       };
+
+      flightChanged(newFlight);
     } else {
-      newFlight = { id: this.props.newID, ...this.state };
-    }
-    this.props.flightListChange(newFlight);
-  }
+      //Добавление нового
+      newFlight = { id: newID, ...this.state };
+
+      flightAdded(newFlight);
+    };
+  };
 
   render() {
-    const { isOpen, model, flight, modalStatusChange } = this.props;
+    const { isOpen, model, flight, modalWindowClose } = this.props;
     const { status } = this.state;
 
     return (
-      <Dialog fullScreen open={isOpen} onClose={modalStatusChange}>
+      <Dialog open={isOpen} onClose={modalWindowClose}>
         <AppBar position='inherit'>
           <Toolbar>
-            <IconButton edge='start' color='inherit' onClick={modalStatusChange} aria-label='close'>
+            <IconButton edge='start' color='inherit' onClick={modalWindowClose} aria-label='close'>
               <CloseIcon />
             </IconButton>
             <Typography variant='h6' >
@@ -97,7 +104,7 @@ class AddChangeFlightWindow extends React.Component {
                   label={el.title}
                   type='time'
                   fullWidth
-                  defaultValue={flight ? flight[el.keyName] : '07:30'}
+                  defaultValue={flight && flight[el.keyName]}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -136,8 +143,9 @@ function mapStateToProps(state) {
 function matchDispatchToProps(dispatch) {
 
   return bindActionCreators({
-    modalStatusChange: modalStatusChange,
-    flightListChange: flightListChange
+    modalWindowClose: modalWindowClose,
+    flightAdded: flightAdded,
+    flightChanged: flightChanged
   }, dispatch)
 };
 
