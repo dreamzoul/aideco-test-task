@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component, createRef } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { modalWindowClose, flightAdded, flightChanged } from '../store/flightSchedule/actions';
@@ -14,58 +14,67 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-class AddChangeFlightWindow extends React.Component {
+class AddChangeFlightWindow extends Component {
+  refList = {};
+
   constructor(props) {
     super(props)
-    this.state = { ...props.flight };
-  }
+    this.props.model.forEach(el => {
+      if (el.keyName) {
+        this.refList[el.keyName] = createRef();
+      };
+    });
+  };
 
   //Получить список элементов для выпадающего списка
   getMenuItemList(list) {
     if (!list) {
       return null;
-    }
+    };
 
     return list.map((option, index) => {
-      return <MenuItem value={index}>{option}</MenuItem>
-    })
+      return <MenuItem
+        key={index}
+        value={index}>
+        {option}
+      </MenuItem>
+    });
   };
 
   //Событие изменения значений полей
   valueChange = (event) => {
     let newState = {};
     newState[event.target.name] = event.target.value;
-    this.setState(newState);
+    // this.setState(newState);
   };
 
   //сохранение изменений из формы
   formSubmit = () => {
-    const { flight, newID, flightAdded, flightChanged } = this.props;
-    let newFlight = {};
+    const { flightList, flight, model, newID, flightAdded, flightChanged } = this.props;
+    let newFlight = flight || {};
+
+    model.forEach(el => {
+      if (el.keyName) {
+        newFlight[el.keyName] = this.refList[el.keyName].current.value;
+      };
+    });
 
     if (flight) {
-      //Изменение существующего
-      newFlight = {
-        ...this.props.flight,
-        ...this.state
-      };
-
-      flightChanged(newFlight);
+      //Изменение существующего 
+      flightChanged(flightList, newFlight);
     } else {
       //Добавление нового
-      newFlight = { id: newID, ...this.state };
-
-      flightAdded(newFlight);
+      newFlight.id = newID;
+      flightAdded(flightList, newFlight);
     };
   };
 
   render() {
     const { isOpen, model, flight, modalWindowClose } = this.props;
-    const { status } = this.state;
 
     return (
       <Dialog open={isOpen} onClose={modalWindowClose}>
-        <AppBar position='inherit'>
+        <AppBar position='static'>
           <Toolbar>
             <IconButton edge='start' color='inherit' onClick={modalWindowClose} aria-label='close'>
               <CloseIcon />
@@ -75,7 +84,7 @@ class AddChangeFlightWindow extends React.Component {
                 ? `Изменение информации о рейсе ${flight.number}`
                 : 'Добавление нового рейса'}
             </Typography>
-            <Button color='second' onClick={this.formSubmit} >
+            <Button onClick={this.formSubmit} >
               {flight
                 ? 'Изменить'
                 : 'Добавить'}
@@ -83,13 +92,15 @@ class AddChangeFlightWindow extends React.Component {
           </Toolbar>
         </AppBar>
         <List>
-          {model.map(el => {
+          {model.map((el, index) => {
             return {
               'string':
                 <TextField
                   id='standard-name'
+                  key={index}
                   placeholder='Начните вводить'
                   defaultValue={flight ? flight[el.keyName] : ''}
+                  inputRef={this.refList[el.keyName]}
                   fullWidth
                   name={el.keyName}
                   onChange={this.valueChange}
@@ -99,7 +110,9 @@ class AddChangeFlightWindow extends React.Component {
               'time':
                 <TextField
                   id='time'
+                  key={index}
                   name={el.keyName}
+                  inputRef={this.refList[el.keyName]}
                   onChange={this.valueChange}
                   label={el.title}
                   type='time'
@@ -114,7 +127,9 @@ class AddChangeFlightWindow extends React.Component {
                 />,
               'select':
                 <Select
-                  value={status || (flight && flight.status)}
+                  key={index}
+                  value={flight/*.status  || (flight && flight.status) */}
+                  inputRef={this.refList[el.keyName]}
                   name={el.keyName}
                   onChange={this.valueChange}
                   fullWidth
@@ -128,7 +143,7 @@ class AddChangeFlightWindow extends React.Component {
         </List>
       </Dialog>
     );
-  }
+  };
 };
 
 function mapStateToProps(state) {
@@ -137,9 +152,11 @@ function mapStateToProps(state) {
     isOpen: state.modalStatus,
     model: state.scheduleModel,
     flight: state.flightList.find(el => el.id === state.selectedFlight),
-    newID: state.flightList.length
+    newID: state.flightList.length,
+    flightList: state.flightList
   };
 };
+
 function matchDispatchToProps(dispatch) {
 
   return bindActionCreators({

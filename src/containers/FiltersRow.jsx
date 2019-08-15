@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setFilters } from '../store/flightSchedule/actions';
@@ -8,7 +8,7 @@ import TextField from '@material-ui/core/TextField';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 
-class FiltersRow extends React.Component {
+class FiltersRow extends Component {
   constructor(props) {
     super(props)
     this.state = {};
@@ -21,7 +21,10 @@ class FiltersRow extends React.Component {
     }
 
     return list.map((option, index) => {
-      return <MenuItem value={index}>{option}</MenuItem>
+      return <MenuItem key={index}
+        value={index}>
+        {option}
+      </MenuItem>
     })
   };
 
@@ -40,14 +43,20 @@ class FiltersRow extends React.Component {
 
     return (
       <TableRow>
-        {model.map(el => {
+        {model.map((el, index) => {
           if (!el.isFilter) {
-            return <TableCell align='center'>Фильтер не доступен</TableCell>;
+            return <TableCell
+              key={index}
+              align='center'>
+              Фильтер не доступен
+              </TableCell>;
           } else {
 
             return {
               'string':
-                <TableCell align='center'>
+                <TableCell
+                  key={index}
+                  align='center'>
                   <TextField
                     id='standard-name'
                     placeholder='Начните вводить'
@@ -61,7 +70,9 @@ class FiltersRow extends React.Component {
                   />
                 </TableCell>,
               'time':
-                <TableCell align='center'>
+                <TableCell
+                  key={index}
+                  align='center'>
                   <TextField
                     id='time'
                     label={el.title}
@@ -78,7 +89,9 @@ class FiltersRow extends React.Component {
                   />
                 </TableCell>,
               'select':
-                <TableCell align='center'>
+                <TableCell
+                  key={index}
+                  align='center'>
                   <Select
                     value={filter[el.keyName] || 0}
                     onChange={this.applyFilter}

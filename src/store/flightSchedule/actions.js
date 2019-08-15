@@ -1,7 +1,4 @@
 import * as types from './actionTypes';
-import getState from './reducer';
-
-let currentState = { ...{}, ...getState() };
 
 //Открыть модальное окно
 export function modalWindowOpen() {
@@ -19,32 +16,28 @@ export function flightSelected(id) {
 }
 
 //Добавление нового рейса
-export function flightAdded(flight) {
-    let flightList = [...[], ...currentState.flightList, flight];
+export function flightAdded(currentList, flight) {
+    const flightList = [...currentList, flight];
 
     return { type: types.FLIGHT_ADDED, flightList }
 };
 
 //Изменение информации о рейсе 
-export function flightChanged(flight) {
-    const indexOfFlight = currentState.flightList.findIndex(el => el.id === flight.id);
-    let flightList = [...[], ...currentState.flightList];
+export function flightChanged(currentList, flight) {
+    const indexOfFlight = currentList.findIndex(el => el.id === flight.id);
+    let flightList = currentList;
     flightList[indexOfFlight] = flight;
 
     return { type: types.FLIGHT_CHANGED, flightList }
 };
 
 //Удаление рейса из списка
-export function flightDeleted(list, id) {
-    // console.log(id, currentState.flightList);
+export function flightDeleted(currentList, id) {
+    const indexOfFlight = currentList.findIndex(el => el.id === id);
+    let flightList = currentList;
+    flightList.splice(indexOfFlight, 1);
 
-    // const indexOfFlight = currentState.flightList.findIndex(el => el.id === id);
-    // let flightList = [...[], ...list];
-    // flightList.splice(indexOfFlight, 1);
-    // console.log(id, currentState.flightList, flightList);
-
-
-    // return { type: types.FLIGHT_DELETED, flightList }
+    return { type: types.FLIGHT_DELETED, flightList }
 };
 
 //выбран конкретный рейс
